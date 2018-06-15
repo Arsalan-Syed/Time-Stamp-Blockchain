@@ -3,8 +3,10 @@ from flask import request
 import json  
 from blockchain import Blockchain
 import random
+#from Crypto.Cipher import RSA
 
 bc=Blockchain()
+peer_urls=[]
 
 app=Flask(__name__)
 
@@ -39,7 +41,7 @@ def get_blocks():
 def get_peer_chains(peer_urls):
 	peer_chains=[]
 	for url in peer_urls:
-		peer_bc=requests.get(url).content
+		peer_bc=requests.get(url+"/blocks").content
 		peer_chain_json=json.loads(peer_bc)
 		peer_chains.append(peer_chain_json)
 		
@@ -49,9 +51,20 @@ def consensus():
 	peer_chains=get_peer_chains(peer_urls)
 	longest_chain=bc.get_blockchain_JSON()
 	for c in peer_chains:
-		if len(longest_chain)<len(c)
+		if len(longest_chain)<len(c):
 			longest_chain=c
+	bc.load_blockchain_JSON(longest_chain)
+	
+	
+'''	
+@app.route('/create',methods=["GET","POST"])
+def create():
+	key = RSA.generate(2048)
+	print(key)
+	return ""
 		
 		
-		
-app.run()
+#app.run()
+key = RSA.generate(2048)
+print(key)
+'''

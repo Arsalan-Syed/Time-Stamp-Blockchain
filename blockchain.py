@@ -1,6 +1,10 @@
 import datetime
 import hashlib
 import random
+import json
+
+
+test='{ "blocks":[ { "Index": "0", "Timestamp":"2018-06-15 19:33:34.404132", "Data":{"file_name":"Genesis","file_hash":0,"proof":"0"}, "Previous hash":"0", "Current hash":"0bc174b166abb34cd9d6b837ddf45bc7c515c4ca4e38d2d5443c2a3eb513fb8d" } , { "Index": "1", "Timestamp":"2018-06-15 19:34:08.554772", "Data":{"file_name":"test.jpg", "file_hash":"0d6c4d9713f41dcaf782fc1e0c5497010e7c8123943e8ba6bdb9e17938c24334", "proof":"189"}, "Previous hash":"0bc174b166abb34cd9d6b837ddf45bc7c515c4ca4e38d2d5443c2a3eb513fb8d", "Current hash":"0c41924a5d876e775b7134b15f0395b265f0c67f7192672bc7f2481d40759e05" } , { "Index": "2", "Timestamp":"2018-06-15 19:34:11.564235", "Data":{"file_name":"test.jpg", "file_hash":"0d6c4d9713f41dcaf782fc1e0c5497010e7c8123943e8ba6bdb9e17938c24334", "proof":"551"}, "Previous hash":"0c41924a5d876e775b7134b15f0395b265f0c67f7192672bc7f2481d40759e05", "Current hash":"0335322add05c53ca7f5f41c8acad5f59633cf9697a69389d06e6f5e19aa220e" } , { "Index": "3", "Timestamp":"2018-06-15 19:34:12.337126", "Data":{"file_name":"test.jpg", "file_hash":"0d6c4d9713f41dcaf782fc1e0c5497010e7c8123943e8ba6bdb9e17938c24334", "proof":"583"}, "Previous hash":"0335322add05c53ca7f5f41c8acad5f59633cf9697a69389d06e6f5e19aa220e", "Current hash":"0005c4e7190ab61cf7742b7653ce966c6df310e175d1fae292eac73909050a95" } ] }'
 
 class Block:
 	
@@ -52,6 +56,10 @@ class Blockchain:
 			return Block(index,timestamp,data,previous_hash)
 		else:
 			return None
+			
+	def clear(self):
+		self.chain=[]
+		self.prev_block=None
 		
 	def dataToJSON(self,data_list):
 		s='{'
@@ -81,6 +89,11 @@ class Blockchain:
 			self.chain.append(next_block)
 			self.update_prev_block(next_block)
 		
+	def add_block_from_JSON(self,block_json):
+		next_block=Block(block_json["Index"],block_json["Timestamp"],block_json["Data"],block_json["Previous hash"])
+		self.chain.append(next_block)
+		self.update_prev_block(next_block)
+	
 	#Returns list of all blocks with given filename
 	#TODO
 	def search_block_by_file_name(self,file_name):
@@ -98,10 +111,14 @@ class Blockchain:
 		s=s[:-2]+'\n]\n}'
 		return s
 	
-	#TODO init using JSON encoded string
-	def load_blockchain_JSON(json_data):
+	#Init using JSON encoded string
+	def load_blockchain_JSON(self,json_data):
+		self.clear()
+		blocks=json_data["blocks"]
 	
-		
+		for b in blocks:
+			self.add_block_from_JSON(b)
+					
 	def print_blockchain(self):
 		print(self.get_blockchain_JSON())
 		
@@ -111,12 +128,15 @@ class Blockchain:
 		
 def main():	
 	blockchain = Blockchain()	
-
+	test_obj=json.loads(test)
+	blockchain.load_blockchain_JSON(test_obj)
+	
+'''
 	for i in range(3):
 		blockchain.add_block('test.jpg','012345','0')
 
 		
 	for b in blockchain.chain:
 		b.print_block();
-
+'''
 #main()
