@@ -14,6 +14,12 @@ def open_file(file_name):
 	file.close()
 	return byte_data
 	
+def read_file(file_name):
+	file = open(file_name,"r")
+	data = file.read()
+	file.close()
+	return data
+	
 #Should work regardless of file format
 def get_file_hash(file_name):
 	file_data=open_file(file_name)
